@@ -10,6 +10,12 @@ public class ApplicationConfiguration {
 
     private BitbucketApi bitbucketApi;
 
+    public ApplicationConfiguration(ServerConfiguration serverConfiguration, String serverPath, BitbucketApi bitbucketApi) {
+        this.serverConfiguration = serverConfiguration;
+	this.serverPath = serverPath;
+	this.bitbucketApi = bitbucketApi;
+    }
+
     public ServerConfiguration getServerConfiguration() {
         return serverConfiguration;
     }

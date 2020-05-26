@@ -16,7 +16,7 @@ public final class Application {
 
     private static Logger logger = LoggerFactory.getLogger(Application.class);
 
-    static WebServer start(ApplicationConfiguration configuration, WebhookHandler webhookHandler) {
+    public static WebServer start(ApplicationConfiguration configuration, WebhookHandler webhookHandler) {
 
         Routing routing = createRouting(configuration, webhookHandler);
 

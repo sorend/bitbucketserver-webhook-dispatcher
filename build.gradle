@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'groovy'
 }
 
@@ -23,15 +23,15 @@ repositories {
 }
 
 dependencies {
-    implementation platform("io.helidon:helidon-bom:${project.helidonversion}")
-    implementation 'io.helidon.bundles:helidon-bundles-webserver'
-    implementation 'io.helidon.config:helidon-config-yaml'
-    implementation 'io.helidon.health:helidon-health'
-    implementation 'io.helidon.health:helidon-health-checks'
-    implementation 'io.helidon.metrics:helidon-metrics'
+    api platform("io.helidon:helidon-bom:${project.helidonversion}")
+    api 'io.helidon.bundles:helidon-bundles-webserver'
+    api 'io.helidon.config:helidon-config-yaml'
+    api 'io.helidon.health:helidon-health'
+    api 'io.helidon.health:helidon-health-checks'
+    api 'io.helidon.metrics:helidon-metrics'
     implementation group: 'org.slf4j', name: 'jul-to-slf4j', version: '1.7.30'
-    implementation group: 'com.cdancy', name: 'bitbucket-rest', version: '2.6.2'
-    implementation group: 'com.github.sorend', name: 'bitbucketserver-webhook-eventpayload', version: '0.0.3'
+    api group: 'com.cdancy', name: 'bitbucket-rest', version: '2.6.2'
+    api group: 'com.github.sorend', name: 'bitbucketserver-webhook-eventpayload', version: '0.0.3'
 
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '1.3-groovy-2.5'
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.10.10'

@@ -24,7 +24,7 @@ public class WebhookService implements Service {
 
     @Override
     public void update(Routing.Rules rules) {
-        rules.post("/event", this::processEventHandler);
+        rules.post("", this::processEventHandler);
     }
 
     private void processEventHandler(ServerRequest request, ServerResponse response) {

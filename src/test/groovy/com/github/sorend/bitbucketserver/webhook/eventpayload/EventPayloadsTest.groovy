@@ -1,15 +1,8 @@
 package com.github.sorend.bitbucketserver.webhook.eventpayload
 
+
 import com.github.sorend.bitbucketserver.webhook.eventpayload.model.Comment
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.MirrorRepoSynchronized
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.PullRequestFromRefUpdated
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.PullRequestOpened
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.RepoCommentAdded
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.RepoCommentDeleted
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.RepoCommentEdited
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.RepoForked
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.RepoModified
-import com.github.sorend.bitbucketserver.webhook.eventpayload.model.RepoRefsChanged
+import com.github.sorend.bitbucketserver.webhook.eventpayload.requests.*
 import com.google.gson.Gson
 import spock.lang.Specification
 
@@ -65,7 +58,7 @@ class EventPayloadsTest extends Specification {
         def res = sut.repoCommentAdded(json)
         println "updatedDate = ${res.comment.createdDate} + ${res.comment.permittedOperations.editable} + ${res.comment.properties_}"
         then:
-        res instanceof RepoCommentAdded
+        res instanceof RepoCommented
         res.actor
         res.repository
         res.comment
@@ -80,7 +73,7 @@ class EventPayloadsTest extends Specification {
         def res = sut.repoCommentEdited(json)
         println "updatedDate = ${res.comment.createdDate} + ${res.comment.permittedOperations.editable} + ${res.previousComment}"
         then:
-        res instanceof RepoCommentEdited
+        res instanceof RepoCommented
         res.actor
         res.repository
         res.comment
@@ -97,7 +90,7 @@ class EventPayloadsTest extends Specification {
         def res = sut.repoCommentDeleted(json)
         println "updatedDate = ${res.comment.createdDate} + ${res.comment} + ${res}"
         then:
-        res instanceof RepoCommentDeleted
+        res instanceof RepoCommented
         res.actor
         res.repository
         res.comment instanceof Comment
@@ -129,7 +122,7 @@ class EventPayloadsTest extends Specification {
         when:
         def res = sut.pullRequestOpened(json)
         then:
-        res instanceof PullRequestOpened
+        res instanceof PullRequestOpenClose
         res.pullRequest
         res.pullRequest.toRef.repository.project.name
         res.pullRequest.fromRef.repository.project.name

@@ -12,8 +12,8 @@ public class ApplicationConfiguration {
 
     public ApplicationConfiguration(ServerConfiguration serverConfiguration, String serverPath, BitbucketApi bitbucketApi) {
         this.serverConfiguration = serverConfiguration;
-	this.serverPath = serverPath;
-	this.bitbucketApi = bitbucketApi;
+        this.serverPath = serverPath;
+        this.bitbucketApi = bitbucketApi;
     }
 
     public ServerConfiguration getServerConfiguration() {

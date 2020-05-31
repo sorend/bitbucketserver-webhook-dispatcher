@@ -12,6 +12,9 @@ import io.helidon.webserver.WebServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public final class Application {
 
     private static Logger logger = LoggerFactory.getLogger(Application.class);
@@ -44,9 +47,10 @@ public final class Application {
                 .addLiveness(HealthChecks.healthChecks())   // Adds a convenient set of checks
                 .build();
 
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
         EventPayloads eventPayloads = new EventPayloads(GsonHelper.configure());
 
-        WebhookDispatcher webhookDispatcher = new WebhookDispatcher(configuration.getBitbucketApi(), eventPayloads, webhookHandler);
+        WebhookDispatcher webhookDispatcher = new WebhookDispatcher(configuration.getBitbucketApi(), eventPayloads, executorService, webhookHandler);
 
         WebhookService webhookService = new WebhookService(webhookDispatcher);
 

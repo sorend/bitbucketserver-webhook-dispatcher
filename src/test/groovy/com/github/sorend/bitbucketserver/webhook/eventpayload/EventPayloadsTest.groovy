@@ -1,10 +1,11 @@
 package com.github.sorend.bitbucketserver.webhook.eventpayload
 
-
+import com.github.sorend.bitbucketserver.webhook.eventpayload.helper.GsonHelper
 import com.github.sorend.bitbucketserver.webhook.eventpayload.model.Comment
 import com.github.sorend.bitbucketserver.webhook.eventpayload.requests.*
 import com.google.gson.Gson
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class EventPayloadsTest extends Specification {
 
@@ -12,7 +13,7 @@ class EventPayloadsTest extends Specification {
     EventPayloads sut
 
     void setup() {
-        gson = com.github.sorend.bitbucketserver.webhook.eventpayload.helper.GsonHelper.configure();
+        gson = GsonHelper.configure();
         sut = new EventPayloads(gson)
     }
 
@@ -55,7 +56,7 @@ class EventPayloadsTest extends Specification {
         String json = EventPayloadsTest.getResource("/repo-comment-added.json").text
         println json
         when:
-        def res = sut.repoCommentAdded(json)
+        def res = sut.repoCommented(json)
         println "updatedDate = ${res.comment.createdDate} + ${res.comment.permittedOperations.editable} + ${res.comment.properties_}"
         then:
         res instanceof RepoCommented
@@ -70,7 +71,7 @@ class EventPayloadsTest extends Specification {
         String json = EventPayloadsTest.getResource("/repo-comment-edited.json").text
         println json
         when:
-        def res = sut.repoCommentEdited(json)
+        def res = sut.repoCommented(json)
         println "updatedDate = ${res.comment.createdDate} + ${res.comment.permittedOperations.editable} + ${res.previousComment}"
         then:
         res instanceof RepoCommented
@@ -87,7 +88,7 @@ class EventPayloadsTest extends Specification {
         String json = EventPayloadsTest.getResource("/repo-comment-deleted.json").text
         println json
         when:
-        def res = sut.repoCommentDeleted(json)
+        def res = sut.repoCommented(json)
         println "updatedDate = ${res.comment.createdDate} + ${res.comment} + ${res}"
         then:
         res instanceof RepoCommented
@@ -120,7 +121,7 @@ class EventPayloadsTest extends Specification {
         String json = EventPayloadsTest.getResource("/pr-opened.json").text
         println json
         when:
-        def res = sut.pullRequestOpened(json)
+        def res = sut.pullRequestOpenClose(json)
         then:
         res instanceof PullRequestOpenClose
         res.pullRequest
@@ -129,7 +130,6 @@ class EventPayloadsTest extends Specification {
         res.pullRequest.author.user.name
     }
 
-    //
     def "parse pr:from_ref_updated example"() {
         given:
         String json = EventPayloadsTest.getResource("/pr-from-ref-updated.json").text
@@ -145,6 +145,110 @@ class EventPayloadsTest extends Specification {
         res.previousFromHash
     }
 
+    def "parse pr:modified example"() {
+        given:
+        String json = EventPayloadsTest.getResource("/pr-modified.json").text
+        println json
+        when:
+        def res = sut.pullRequestModified(json)
+        then:
+        res instanceof PullRequestModified
+        res.pullRequest
+        res.previousDescription
+        res.previousTarget
+        res.previousTarget.latestCommit
+        res.pullRequest.reviewers.size() == 1
+        res.pullRequest.reviewers.any { it.user.id == 36303 }
+    }
 
+    def "parse pr:reviewer:updated example"() {
+        given:
+        String json = EventPayloadsTest.getResource("/pr-reviewer-updated.json").text
+        println json
+        when:
+        def res = sut.pullRequestReviewerUpdated(json)
+        then:
+        res instanceof PullRequestReviewerUpdated
+        res.pullRequest
+        res.addedReviewers.size() == 1
+        res.addedReviewers[0].emailAddress == "user2@atlassian.com"
+        res.removedReviewers.size() == 1
+        res.removedReviewers[0].slug == "user"
+    }
+
+    @Unroll
+    def "parse pr:reviewer:approved/unapproved/needs_work example #r"() {
+        given:
+        String json = EventPayloadsTest.getResource(fn).text
+        println json
+        when:
+        def res = sut.pullRequestReviewerFeedback(json)
+        then:
+        res instanceof PullRequestReviewerFeedback
+        res.pullRequest
+        res.previousStatus
+        res.participant
+        res.participant.user.displayName == "User"
+        res.participant.lastReviewedCommit == "ef8755f06ee4b28c96a847a95cb8ec8ed6ddd1ca"
+        res.participant.status == r
+        where:
+        fn                             || r
+        "/pr-reviewer-approved.json"   || "APPROVED"
+        "/pr-reviewer-unapproved.json" || "UNAPPROVED"
+        "/pr-reviewer-needs_work.json" || "NEEDS_WORK"
+    }
+
+    def "parse pr:merged example"() {
+        given:
+        String json = EventPayloadsTest.getResource("/pr-merged.json").text
+        println json
+        when:
+        def res = sut.pullRequestOpenClose(json)
+        then:
+        res instanceof PullRequestOpenClose
+        res.pullRequest
+        res.pullRequest.participants.size() == 1
+        res.pullRequest.participants[0].role == "PARTICIPANT"
+        !res.pullRequest.participants[0].lastReviewedCommit
+        res.pullRequest.properties_.mergeCommit.displayId
+    }
+
+    @Unroll
+    def "parse pr:declined/deleted example #fn"() {
+        given:
+        String json = EventPayloadsTest.getResource(fn).text
+        println json
+        when:
+        def res = sut.pullRequestOpenClose(json)
+        then:
+        res instanceof PullRequestOpenClose
+        res.pullRequest
+        res.eventKey == e
+        where:
+        fn                  || e
+        "/pr-declined.json" || "pr:declined"
+        "/pr-deleted.json"  || "pr:deleted"
+    }
+
+    @Unroll
+    def "parse pr:comment:added #fn example"() {
+        given:
+        String json = EventPayloadsTest.getResource(fn).text
+        println json
+        when:
+        def res = sut.pullRequestCommented(json)
+        then:
+        res instanceof PullRequestCommented
+        res.pullRequest
+        res.comment.text
+        res.commentParentId == 43
+        res.previousComment == pc
+        res.eventKey == e
+        where:
+        fn                         | e                    | pc
+        "/pr-comment-added.json"   | "pr:comment:added"   | null
+        "/pr-comment-edited.json"  | "pr:comment:edited"  | "I am a PR comment"
+        "/pr-comment-deleted.json" | "pr:comment:deleted" | null
+    }
 
 }

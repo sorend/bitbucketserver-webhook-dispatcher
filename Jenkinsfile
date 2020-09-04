@@ -18,12 +18,17 @@ pipeline {
         cron("H H * * H")
     }
     stages {
-        stage('Build') {
+        stage('pre build') {
             steps {
                 script {
                     buildVersion = tagVersion()
+                    echo "Building version ${buildVersion}"
                 }
-                sh 'gradle -Pversion=${buildVersion} clean build artifactoryPublish'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh "gradle -Pversion=${buildVersion} clean build artifactoryPublish"
             }
         }
     }

@@ -4,16 +4,14 @@ import com.cdancy.bitbucket.rest.BitbucketApi;
 import com.github.sorend.bitbucketserver.webhook.eventpayload.features.CommentAware;
 import com.github.sorend.bitbucketserver.webhook.eventpayload.features.PullRequestAware;
 import com.github.sorend.bitbucketserver.webhook.eventpayload.features.RepositoryAware;
-import io.helidon.webserver.ServerRequest;
 
 public class ContextBuilder {
 
-    public static ContextBuilder create(BitbucketApi api, ServerRequest request) {
-        return new ContextBuilder(api, request);
+    public static ContextBuilder create(BitbucketApi api) {
+        return new ContextBuilder(api);
     }
 
     private BitbucketApi api;
-    private ServerRequest serverRequest;
     private String project;
     private String repo;
     private int pullRequestId;
@@ -21,9 +19,8 @@ public class ContextBuilder {
     private int commentId;
     private int commentVersion;
 
-    private ContextBuilder(BitbucketApi api, ServerRequest serverRequest) {
+    private ContextBuilder(BitbucketApi api) {
         this.api = api;
-        this.serverRequest = serverRequest;
     }
 
     public ContextBuilder fromRepo(RepositoryAware r) {
@@ -47,15 +44,15 @@ public class ContextBuilder {
     }
 
     public RepoContext buildRepo() {
-        return new RepoContextImpl(api, serverRequest, project, repo);
+        return new RepoContextImpl(api, project, repo);
     }
 
     public PullRequestContext buildPR() {
-        return new PullRequestContextImpl(api, serverRequest, project, repo, pullRequestId, pullRequestVersion);
+        return new PullRequestContextImpl(api, project, repo, pullRequestId, pullRequestVersion);
     }
 
     public PullRequestCommentContext buildPRC() {
-        return new PullRequestCommentContextImpl(api, serverRequest, project, repo, pullRequestId, pullRequestVersion, commentId, commentVersion);
+        return new PullRequestCommentContextImpl(api, project, repo, pullRequestId, pullRequestVersion, commentId, commentVersion);
     }
 }
 

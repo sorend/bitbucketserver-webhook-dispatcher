@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        maven { url "https://artifactory.tools.bdpnet.dk/artifactory/jcenter" }
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+    }
+}
+apply plugin: 'maven-publish'
+apply plugin: org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin
+
+//
+// Creates function jenkinsAwareArtifactoryPublishing in the project
+//
+ext.jenkinsAwareArtifactoryPublishing = { String dist, String targetRepository = 'libs-release-candidate-local', artifactVersion = null ->
+
+    def env = System.getenv()
+    def artifactoryUser = env.ARTIFACTORY_PUBLISHING_USR
+    def artifactoryPass = env.ARTIFACTORY_PUBLISHING_PSW
+
+    def branchName = env.BRANCH_NAME ?: "unknown-branch"
+    def buildName = "${project.name}-${branchName.replace('/', '-slash-')}"
+    def buildNumber = artifactVersion ?: env.BUILD_ID
+    def buildUrl = env.BUILD_URL
+    def gitCommit = env.GIT_COMMIT
+    def gitUrl = env.GIT_URL
+
+    project.artifactoryPublish {
+        contextUrl = "https://artifactory.tools.bdpnet.dk/artifactory"
+        publications(dist)
+        properties = ['vcs.revision': gitCommit, 'vcs.url': gitUrl, 'vcs.branch': branchName]
+        clientConfig.setIncludeEnvVars(true)
+        clientConfig.setEnvVarsExcludePatterns("ARTIFACTORY_*")
+
+        clientConfig.publisher.repoKey = targetRepository
+        clientConfig.publisher.username = artifactoryUser
+        clientConfig.publisher.password = artifactoryPass
+        // this is the API key
+        clientConfig.info.setVcsUrl(gitUrl)
+        clientConfig.info.setVcsRevision(gitCommit)
+        clientConfig.info.setBuildUrl(buildUrl)
+        clientConfig.info.setBuildName(buildName)
+        clientConfig.info.setBuildNumber(buildNumber)
+    }
+}

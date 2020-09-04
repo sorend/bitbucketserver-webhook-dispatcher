@@ -1,16 +1,11 @@
-package com.github.sorend.bitbucketserver.webhook.service;
+package com.github.sorend.bitbucketserver.webhook;
 
 import com.cdancy.bitbucket.rest.BitbucketApi;
-import com.github.sorend.bitbucketserver.webhook.WebhookEvent;
-import com.github.sorend.bitbucketserver.webhook.WebhookHandler;
 import com.github.sorend.bitbucketserver.webhook.context.ContextBuilder;
 import com.github.sorend.bitbucketserver.webhook.eventpayload.EventPayloads;
-import io.helidon.webserver.ServerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
@@ -30,13 +25,13 @@ public class WebhookDispatcher {
         this.wh = wh;
     }
 
-    public void dispatch(String eventKey, ServerRequest serverRequest, String json) {
-        executorService.submit(() -> dispatchInner(eventKey, serverRequest, json));
+    public void dispatch(String eventKey, String json) {
+        executorService.submit(() -> dispatchInner(eventKey, json));
     }
 
-    public void dispatchInner(String eventKey, ServerRequest serverRequest, String json) {
+    public void dispatchInner(String eventKey, String json) {
         try {
-            ContextBuilder cb = ContextBuilder.create(api, serverRequest);
+            ContextBuilder cb = ContextBuilder.create(api);
 
             if ("repo:refs_changed".equals(eventKey)) {
                 wh.onRepoRefsChanged(builder(json, epf::repoRefsChanged, x -> cb.fromRepo(x).buildRepo()));

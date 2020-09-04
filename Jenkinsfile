@@ -4,7 +4,7 @@ def buildVersion = "0.0.0-SNAPSHOT"
 pipeline {
     agent {
         kubernetes {
-            yaml libraryResource("jdk8.yml")
+            yaml libraryResource("jdk11.yml")
             defaultContainer "builder"
         }
     }

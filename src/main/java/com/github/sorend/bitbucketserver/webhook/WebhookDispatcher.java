@@ -85,9 +85,4 @@ public class WebhookDispatcher {
         C context = contextOf.apply(payload);
         return new WebhookEvent<>(payload, context);
     }
-
-
-
-
-
 }

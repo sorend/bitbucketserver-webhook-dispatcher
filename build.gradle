@@ -3,8 +3,6 @@ plugins {
     id 'groovy'
 }
 
-apply from: "gradle/artifactory.gradle"
-
 group = 'com.github.sorend'
 
 description = """Bitbucket server webhook dispatcher framework"""
@@ -16,7 +14,7 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
-    maven { url "https://artifactory.tools.bdpnet.dk/artifactory/libs-release" }
+    jcenter()
 }
 
 dependencies {
@@ -34,8 +32,6 @@ publishing {
         }
     }
 }
-
-jenkinsAwareArtifactoryPublishing("dist")
 
 wrapper {
     gradleVersion = '6.4.1'

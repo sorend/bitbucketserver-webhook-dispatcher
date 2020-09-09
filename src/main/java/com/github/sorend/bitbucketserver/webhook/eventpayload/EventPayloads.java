@@ -1,5 +1,6 @@
 package com.github.sorend.bitbucketserver.webhook.eventpayload;
 
+import com.github.sorend.bitbucketserver.webhook.eventpayload.helper.GsonHelper;
 import com.github.sorend.bitbucketserver.webhook.eventpayload.requests.*;
 import com.google.gson.Gson;
 
@@ -8,9 +9,13 @@ import com.google.gson.Gson;
  */
 public class EventPayloads {
 
+    public static EventPayloads create() {
+        return new EventPayloads(GsonHelper.configure());
+    }
+
     private Gson gson;
 
-    public EventPayloads(Gson gson) {
+    EventPayloads(Gson gson) {
         this.gson = gson;
     }
 

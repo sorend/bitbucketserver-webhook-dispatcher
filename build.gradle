@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'groovy'
+    id 'jacoco'
 }
 
 group = 'com.github.sorend'
@@ -26,6 +27,14 @@ dependencies {
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.10.10'
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+check.dependsOn jacocoTestReport
+
 publishing {
     publications {
         dist(MavenPublication) {
@@ -35,5 +44,5 @@ publishing {
 }
 
 wrapper {
-    gradleVersion = '6.4.1'
+    gradleVersion = '7.0.2'
 }

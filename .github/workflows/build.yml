@@ -25,6 +25,9 @@ jobs:
           distribution: 'adopt'
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Build with Gradle
+        run: ./gradlew jacocoTestReport
+        if: ${{ always() }}
       - if: ${{ always() }}
         uses: codecov/codecov-action@v1
         with:

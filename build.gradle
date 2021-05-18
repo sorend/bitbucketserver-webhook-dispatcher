@@ -27,6 +27,10 @@ dependencies {
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.11.0'
 }
 
+test {
+    useJUnitPlatform()
+}
+
 jacocoTestReport {
     reports {
         xml.enabled true

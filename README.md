@@ -1,5 +1,10 @@
 # bitbucket server webhook dispatcher
 
+[![Release](https://jitpack.io/v/sorend/bitbucketserver-webhook-dispatcher.svg)](https://jitpack.io/#sorend/bitbucketserver-webhook-dispatcher)
+[![Build status](https://github.com/sorend/bitbucketserver-webhook-dispatcher/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/sorend/bitbucketserver-webhook-dispatcher/actions/?query=branch%3Amain)
+[![CodeQL](https://github.com/sorend/bitbucketserver-webhook-dispatcher/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/sorend/bitbucketserver-webhook-dispatcher/actions/workflows/codeql-analysis.yml)
+[![Codecov](https://codecov.io/gh/sorend/bitbucketserver-webhook-dispatcher/branch/main/graph/badge.svg)](https://codecov.io/gh/sorend/bitbucketserver-webhook-dispatcher)
+
 Tooling for implementing bitbucket-server "stash" webhook services in any Java framework :-)
 
 Features:
